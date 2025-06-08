@@ -86,6 +86,8 @@ Esta sección detalla los pasos seguidos para replicar y validar el enfoque prop
 
 Continuando con la replicación de enfoques de identificación de microservicios, esta sección describe los pasos para implementar el método propuesto en el paper "GTMicro—microservice identification approach based on deep NLP transformer model for greenfield developments". Este enfoque se centra en la identificación de contextos delimitados como microservicios para aplicaciones *greenfield*, utilizando un modelo Transformer de PNL.
 
+**Nota: Aqui se tuvo que realizar la implementacion completa porque no habia disponibilidad de Codigo**
+
 ## Ejecución (GTMicro)
 
 El enfoque GTMicro se basa en el análisis semántico de los casos de uso para agrupar funcionalidades y proponer microservicios. A continuación, se detallan los pasos replicados:
@@ -95,10 +97,29 @@ El enfoque GTMicro se basa en el análisis semántico de los casos de uso para a
       * Se recopilaron los **casos de uso** de las aplicaciones de prueba (JPetStore y TFWA), extraídos de sus documentos de requisitos.
       * Cada caso de uso fue convertido en su respectiva **representación vectorial (embedding)** utilizando un modelo basado en **Bidirectional Encoder Representations from Transformers (BERT)**. BERT fue fundamental para capturar el significado contextual y las relaciones semánticas de las frases de los casos de uso.
 
+<div align="center">
+  <img src="images/2a.png" alt="Instalacion de dependencias" width="800">
+</div>
+
+<div align="center">
+  <img src="images/2b.png" alt="Depenencias" width="800">
+</div>
+
+
   * **2. Cálculo de la Matriz de Similaridad Semántica:**
 
       * Una vez obtenidos los vectores de cada caso de uso, se calculó la **similaridad coseno** entre todos los pares de vectores.
       * Estos puntajes de similaridad se utilizaron para construir una **matriz de similaridad de $N \\times N$**, donde $N$ es el número total de casos de uso. Esta matriz representa la similaridad semántica entre cada caso de uso y todos los demás.
+
+
+    <div align="center">
+      <img src="images/2c.png" alt="Calculo de similaridad" width="800">
+    </div>
+
+    <div align="center">
+      <img src="images/2d.png" alt="Matriz de similaridad" width="800">
+    </div>
+
 
   * **3. Aplicación de Clustering Jerárquico y Determinación de Clústeres Óptimos:**
 
@@ -106,10 +127,20 @@ El enfoque GTMicro se basa en el análisis semántico de los casos de uso para a
       * Para encontrar el **número óptimo de clústeres** (que corresponde a los microservicios candidatos), se empleó el **método de la silueta (Silhouette method)**. Este método ayuda a evaluar la cohesión y separación de los clústeres formados.
       * Cada clúster identificado se considera un **contexto delimitado**, proponiendo así los microservicios para la aplicación. Por ejemplo, en JPetStore, se identificaron cuatro microservicios: `Account service`, `Catalog service`, `Order service` y `Frontend service`.
 
+<div align="center">
+  <img src="images/2e.png" alt="Calculo de similaridad" width="800">
+</div>
+
+<div align="center">
+  <img src="images/2f.png" alt="Matriz de similaridad" width="800">
+</div>
+
   * **4. Evaluación de la Calidad de los Microservicios:**
 
       * Los microservicios resultantes de la aplicación de GTMicro fueron mapeados a métricas de evaluación de calidad de software estándar (`Precision`, `Recall`, `F1-Score`).
       * Se calcularon las métricas de rendimiento para los proyectos de prueba. Por ejemplo, JPetStore obtuvo un **F1-Score de 0.95**, y TFWA un **F1-Score de 0.8205**, demostrando la efectividad del enfoque en agrupar casos de uso de manera coherente con los límites del dominio.
+
+
 
 
 
