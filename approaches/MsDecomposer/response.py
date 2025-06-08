@@ -63,7 +63,7 @@ def has_key(o, k):
 # 获取 ref 最终引向的资源的名称
 def get_ref_last_resource_name(definition, api_definitions):
     resource_name = get_ref_name(definition)
-    print(resource_name)
+    # print(resource_name)
     if api_definitions[resource_name]["type"] == "array":
         return get_ref_last_resource_name(api_definitions[resource_name]["items"]["$ref"], api_definitions)
     else:

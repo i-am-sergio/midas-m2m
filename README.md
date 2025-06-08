@@ -54,19 +54,63 @@ Esta sección detalla los pasos seguidos para replicar y validar el enfoque prop
     * Se implementó el cálculo de la similaridad entre estas APIs. Esto se realizó combinando dos medidas: la **candidate topic similarity** (derivada de los nombres de las operaciones o descripciones) y la **response message similarity** (basada en la estructura y contenido de los esquemas de respuesta).
     * La similaridad global de cada par de APIs fue obtenida a través de una combinación ponderada de ambas medidas.
 
-    ![Extracción de datos y similaridad](/images/data_similarity.png)
+    <div align="center">
+      <img src="images/1b.png" alt="Extracción de datos y similaridad" width="800">
+    </div>
+
+    <div align="center">
+      <img src="images/1c.png" alt="Calculo de Similaridad Ponderada" width="800">
+    </div>
 
 * **2. Construcción del Grafo de Similaridad de API:**
     * Una vez calculadas todas las similaridades, se construyó un **grafo de similaridad de API**. En este grafo, cada **nodo** representa una API individual del sistema legado.
     * Las **aristas** entre los nodos fueron establecidas basándose en la similaridad global calculada en el paso anterior. El **peso de cada arista** corresponde directamente al valor de similaridad entre las dos APIs conectadas, reflejando la fuerza de su relación semántica.
 
-    ![Construcción del grafo](/images/graph_construction.png)
+    <div align="center">
+      <img src="images/1d.png" alt="Construcción del grafo" width="800">
+    </div>
 
 * **3. Identificación de Microservicios Candidatos mediante Clustering de Grafos:**
     * Finalmente, se aplicó un **algoritmo de clustering basado en grafos** sobre el grafo de similaridad de API. Este algoritmo tiene como objetivo agrupar las APIs que exhiben una alta similaridad entre sí, formando así cúmulos cohesivos.
     * Cada uno de estos cúmulos identificados por el algoritmo representa un **microservicio candidato** para la descomposición del sistema monolítico. Los resultados fueron analizados para evaluar la efectividad de la partición.
 
-    ![Clustering y microservicios](/images/clustering_microservices.png)
+    <div align="center">
+      <img src="images/1e.png" alt="Construcción del grafo" width="800">
+    </div>
+
+    <div align="center">
+      <img src="images/1f.png" alt="Construcción del grafo" width="800">
+    </div>
+
+
+
+Continuando con la replicación de enfoques de identificación de microservicios, esta sección describe los pasos para implementar el método propuesto en el paper "GTMicro—microservice identification approach based on deep NLP transformer model for greenfield developments". Este enfoque se centra en la identificación de contextos delimitados como microservicios para aplicaciones *greenfield*, utilizando un modelo Transformer de PNL.
+
+## Ejecución (GTMicro)
+
+El enfoque GTMicro se basa en el análisis semántico de los casos de uso para agrupar funcionalidades y proponer microservicios. A continuación, se detallan los pasos replicados:
+
+  * **1. Preparación de Casos de Uso y Generación de Embeddings BERT:**
+
+      * Se recopilaron los **casos de uso** de las aplicaciones de prueba (JPetStore y TFWA), extraídos de sus documentos de requisitos.
+      * Cada caso de uso fue convertido en su respectiva **representación vectorial (embedding)** utilizando un modelo basado en **Bidirectional Encoder Representations from Transformers (BERT)**. BERT fue fundamental para capturar el significado contextual y las relaciones semánticas de las frases de los casos de uso.
+
+  * **2. Cálculo de la Matriz de Similaridad Semántica:**
+
+      * Una vez obtenidos los vectores de cada caso de uso, se calculó la **similaridad coseno** entre todos los pares de vectores.
+      * Estos puntajes de similaridad se utilizaron para construir una **matriz de similaridad de $N \\times N$**, donde $N$ es el número total de casos de uso. Esta matriz representa la similaridad semántica entre cada caso de uso y todos los demás.
+
+  * **3. Aplicación de Clustering Jerárquico y Determinación de Clústeres Óptimos:**
+
+      * Se aplicó un **algoritmo de clustering jerárquico** sobre la matriz de similaridad. Este método produce una presentación gráfica en forma de dendogramas, que visualizan la jerarquía de agrupamiento de los casos de uso.
+      * Para encontrar el **número óptimo de clústeres** (que corresponde a los microservicios candidatos), se empleó el **método de la silueta (Silhouette method)**. Este método ayuda a evaluar la cohesión y separación de los clústeres formados.
+      * Cada clúster identificado se considera un **contexto delimitado**, proponiendo así los microservicios para la aplicación. Por ejemplo, en JPetStore, se identificaron cuatro microservicios: `Account service`, `Catalog service`, `Order service` y `Frontend service`.
+
+  * **4. Evaluación de la Calidad de los Microservicios:**
+
+      * Los microservicios resultantes de la aplicación de GTMicro fueron mapeados a métricas de evaluación de calidad de software estándar (`Precision`, `Recall`, `F1-Score`).
+      * Se calcularon las métricas de rendimiento para los proyectos de prueba. Por ejemplo, JPetStore obtuvo un **F1-Score de 0.95**, y TFWA un **F1-Score de 0.8205**, demostrando la efectividad del enfoque en agrupar casos de uso de manera coherente con los límites del dominio.
+
 
 
 <!-- ## Run

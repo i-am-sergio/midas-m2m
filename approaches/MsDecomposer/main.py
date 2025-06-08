@@ -34,6 +34,7 @@ def get_clusters_num(apis):
             else:
                 keys.append({"name": api_key, "counter": 1})
     #  and key["counter"] != 1
+    #  Para estimar el número máximo de clústeres.
     return len(list(filter(
         lambda key:key["counter"]!=len(apis) and key["counter"] != len(apis) - 1 and key["counter"] != 1, keys)))
 
@@ -108,33 +109,47 @@ def transfer_microservice(ms_list, apis):
 
 
 def main():
+    # Obtiene las APIs y las definiciones de esquemas del archivo especificado
     (apis, api_definitions) = get_apis("./specifications_dataset" + file)
 
-    # print_line(apis)
+    print_line(apis)
     # 计算最大聚类数量
     print("**** 计算最大聚类数量")
+    print("**** Calculando el número máximo de clústeres")
     max_clusters_num = get_clusters_num(apis)
     print(max_clusters_num)
     print("**** 计算主题相似度")
+    print("**** Calculando la similaridad de tópicos")
     topic_similarity = handle_topic_similarity(apis)
-    # print(topic_similarity)
+    print(topic_similarity[0:8])
     print("**** 计算响应消息相似度")
+    print("**** Calculando la similaridad del mensaje de respuesta")
     response_similarity = calc_response_similarity(apis, api_definitions)
-    # print(response_similarity)
+    print(response_similarity[0:8])
     print("**** 计算综合相似度")
+    print("**** Calculando la similaridad combinada")
     api_similarity = clac_api_similaritis(topic_similarity, response_similarity)
-    # print(api_similarity)
+    print(api_similarity[0:8])
     print("**** 计算 matrics")
+    print("**** Calculando matrices")
     api_similarity_adj_mat = set_adjacency_matrix(api_similarity, len(apis))
+
+    print("\n**** Matriz de Adyacencia de Similaridad de API (formato 6 decimales) ****")
+    for row_index in range(len(api_similarity_adj_mat)):
+        formatted_row = [f"{value: .6f}" for value in api_similarity_adj_mat[row_index]]
+        print(" ".join(formatted_row))
+    print("------------------------------------------------------------------")
 
     # 使用评分方式选出推荐微服务
     print("**** 使用评分方式选出推荐微服务")
+    print("**** Seleccionando microservicios recomendados usando un enfoque de puntuación")
     recommend_microservices = []
+    
     for k in range(2, max_clusters_num + 1):
         sc = SpectralClustering(n_clusters=k, affinity='precomputed')
         sc.fit(api_similarity_adj_mat)
         # print(sc.labels_)
-        # print(sc.affinity_matrix_)
+        print(sc.affinity_matrix_)
         # metrics.calinski_harabaz_score(api_similarity_adj_mat, sc.labels_) 是用来计算当前的划分出来的图的分值
         # 计算 Calinski 和 Harabaz 得分。方差比标准。被定义为群内分散和群集间分散之间的比率。
         recommend_microservices.append(
@@ -143,16 +158,24 @@ def main():
     print_line(recommend_microservices)
     # 找出评分最高的（最适合）的微服务
     print("**** 找出评分最高的（最适合）的微服务")
+    print("**** Encontrando el microservicio con la puntuación más alta (el más adecuado)")
     best = (0, 0)
     for microservice in recommend_microservices:
+        print("Puntuacion Actual: ",best[0], " - Puntuacion Nueva: " , microservice[0])
         if best[0] < microservice[0]:
             best = microservice
 
     print("**** 存储微服务")
+    print("**** Guardando los microservicios")
     result = transfer_microservice(best[1], apis)
 
     with open("./result/" + file, "w") as f:
         json.dump(result, f)
+    
+     # print in json format by console
+    print("**** Resultados")
+    print(json.dumps(result, indent=2))
+
 
 
 if __name__ == '__main__':
