@@ -1,4 +1,4 @@
-# MIDAS: MIDAS: A Multiview Graph-Based Approach for Automatic Microservice Extraction Enhanced by Domain Knowledge Using SBERT and Self-Weighted Clustering
+# MIDAS: A Multiview Graph-Based Approach for Automatic Microservice Extraction Enhanced by Domain Knowledge Using BERT Models and Self-Weighted Clustering
 
 ## Prerrequisitos
 - **Environment:** SO Linux/Debian 13
@@ -92,10 +92,15 @@ Continuando con la replicación de enfoques de identificación de microservicios
 
 El enfoque GTMicro se basa en el análisis semántico de los casos de uso para agrupar funcionalidades y proponer microservicios. A continuación, se detallan los pasos replicados:
 
-  * **1. Preparación de Casos de Uso y Generación de Embeddings BERT:**
+  * **1. Preparación de Casos de Uso y Generación de Embeddings con modelos BERT:**
 
       * Se recopilaron los **casos de uso** de las aplicaciones de prueba (JPetStore y TFWA), extraídos de sus documentos de requisitos.
       * Cada caso de uso fue convertido en su respectiva **representación vectorial (embedding)** utilizando un modelo basado en **Bidirectional Encoder Representations from Transformers (BERT)**. BERT fue fundamental para capturar el significado contextual y las relaciones semánticas de las frases de los casos de uso.
+      * Se experimento con 5 modelos basados en BERT para elegir los mas optimos
+
+<div align="center">
+  <img src="images/berts1.png" alt="Comparacion de Modelos Basados en BERT" width="800">
+</div>
 
 <div align="center">
   <img src="images/2a.png" alt="Instalacion de dependencias" width="800">
